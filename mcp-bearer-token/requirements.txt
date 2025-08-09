@@ -1,0 +1,9 @@
+fastmcp
+mcp
+httpx
+python-dotenv
+pillow
+readabilipy
+markdownify
+beautifulsoup4
+lxml
