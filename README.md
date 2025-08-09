@@ -1,4 +1,4 @@
-MCP Multi-Agent Customer Care & Web Search Server
+# MCP Multi-Agent Customer Care & Web Search Server
 ## 📌 Overview
 This project is a Multi-Agent MCP Server designed for integration with Puch AI.
 It simulates a customer care system and a web search engine, both coordinated by a supervisor agent.
