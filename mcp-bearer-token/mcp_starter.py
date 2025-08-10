@@ -4,10 +4,13 @@ Puch AI MCP Multi-Agent Server
 - Supervisor agent routes queries to Customer Care or Web Search.
 - Human-in-the-loop escalation queue.
 - Simple token auth and validate() tool required by Puch AI.
+- Added /hello HTTP route for health check
 """
 
 import asyncio
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Annotated
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, AnyUrl
@@ -211,29 +214,37 @@ async def summarize_url(
     sentences_list = [s.strip() for s in text.split(". ") if s.strip()]
     return ". ".join(sentences_list[:sentences]) + ("." if len(sentences_list) >= sentences else "")
 
-# --- Run server ---
+# --- Simple Hello World HTTP server ---
+class HelloHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/hello":
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"message": "Hello World, MCP server is running 🚀"}')
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+def start_hello_server(host, port):
+    server = HTTPServer((host, port), HelloHandler)
+    print(f"🌐 Health check route: http://{host}:{port}/hello")
+    server.serve_forever()
+
 # --- Run server ---
 async def main():
     print("🚀 Starting Puch MultiAgent MCP server...")
     print(f"📞 Phone validation: {MY_NUMBER}")
     print(f"🔑 Auth token configured: {'✓' if AUTH_TOKEN else '✗'}")
-    print("\n📋 Available tools:")
-    print("  - validate(): Returns phone number")
-    print("  - supervisor(): Routes queries to customer care or web search")
-    print("  - list_escalations(): Lists escalation tickets")
-    print("  - respond_escalation(): Resolves escalation tickets")
-    print("  - summarize_url(): Summarizes web pages")
 
-    # Set host and port
     PORT = int(os.environ.get("PORT", 8086))
     HOST = os.environ.get("HOST", "0.0.0.0")
 
-    # Log URL
-    print(f"\n🌐 Server starting on http://{HOST}:{PORT}")
+    # Start hello world HTTP server in separate thread
+    threading.Thread(target=start_hello_server, args=(HOST, PORT+1), daemon=True).start()
 
-    # Start HTTP transport
+    # Start MCP server
     await mcp.run_async("streamable-http", host=HOST, port=PORT)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
