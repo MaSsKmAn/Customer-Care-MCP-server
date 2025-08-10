@@ -119,6 +119,9 @@ Supervisor decides:
 "Sensitive refund case" → Human approval required.
 
 Response sent back to Puch AI.
+## Serer
+Deployed on Render:
+https://customer-care-mcp-server.onrender.com
 
 ## 🤝 Contributing
 Pull requests are welcome! Please:
