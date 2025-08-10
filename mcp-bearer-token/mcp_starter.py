@@ -213,4 +213,7 @@ async def summarize_url(
 
 # --- Run MCP server directly ---
 if __name__ == "__main__":
+    port=8080
+    host = os.environ.get("HOST", "0.0.0.0")
+    mcp.run("streamable-http", host=host, port=port)
     mcp.run()
